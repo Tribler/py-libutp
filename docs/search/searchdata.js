@@ -2,12 +2,13 @@ var indexSectionsWithContent =
 {
   0: "_abcefilmnprstu",
   1: "u",
-  2: "u",
+  2: "ru",
   3: "mu",
   4: "_abcefilmnrstu",
   5: "bcisu",
   6: "u",
-  7: "acipu"
+  7: "acipu",
+  8: "p"
 };
 
 var indexSectionNames =
@@ -19,7 +20,8 @@ var indexSectionNames =
   4: "variables",
   5: "typedefs",
   6: "enumvalues",
-  7: "defines"
+  7: "defines",
+  8: "pages"
 };
 
 var indexSectionLabels =
@@ -31,6 +33,7 @@ var indexSectionLabels =
   4: "Variables",
   5: "Typedefs",
   6: "Enumerator",
-  7: "Macros"
+  7: "Macros",
+  8: "Pages"
 };
 
