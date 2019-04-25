@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['utp_5fcallback_5fnames',['utp_callback_names',['../utp_8h.html#a43dacf54ca9ca96921e3c88a962c4c76',1,'utp.h']]],
-  ['utp_5ferror_5fcode_5fnames',['utp_error_code_names',['../utp_8h.html#a1056a2d9baa7a937874c5408d5c7354f',1,'utp.h']]],
-  ['utp_5fstate_5fnames',['utp_state_names',['../utp_8h.html#aebbe0217f564d6c64807f8d8b3a3dee5',1,'utp.h']]]
+  ['recv_5fid',['recv_id',['../structUTPSocketKey.html#a47fd4568b703f7ff38376e370179b685',1,'UTPSocketKey']]],
+  ['rexmit',['rexmit',['../structutp__socket__stats.html#a72fa7f8ff5716d1777fe799b0f14f18f',1,'utp_socket_stats']]],
+  ['rst_5finfo',['rst_info',['../structstruct__utp__context.html#abf42d6ea3a54492b82d7d026919f6486',1,'struct_utp_context']]]
 ];

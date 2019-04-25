@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['fastrexmit',['fastrexmit',['../structutp__socket__stats.html#a70aa2d89d9f6d5407d791a86d8cc898d',1,'utp_socket_stats']]],
-  ['flags',['flags',['../structutp__callback__arguments.html#adc0546366e6d6025b0a1516111187963',1,'utp_callback_arguments']]]
+  ['e',['E',['../structutp__hash__t.html#a80341860c8a88406519f0b47cfad8fe8',1,'utp_hash_t']]],
+  ['elem',['elem',['../structutp__hash__iterator__t.html#a5540dab2f8a7d123ef31db0c256b0a41',1,'utp_hash_iterator_t']]],
+  ['error_5fcode',['error_code',['../structutp__callback__arguments.html#aeee0e475d23ba6688290d05ba2c556af',1,'utp_callback_arguments']]]
 ];
