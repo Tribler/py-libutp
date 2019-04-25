@@ -24,7 +24,7 @@ dirs = $(shell find src/ -type d -print)
 includedirs :=  $(sort $(foreach dir, $(foreach dir1, $(dirs), $(shell dirname $(dir1))), $(wildcard $(dir)/include)))
 
 #linkerflags (include lm (math.h) for advanced math)
-LFLAGS = -L.
+LFLAGS = -L./lib
 LIBRARIES = -lm -lutp
 
 test: LIBRARIES = -lm 
@@ -58,12 +58,23 @@ c_object_files := $(patsubst src/%.c, \
     build/%.o, $(c_source_files))
 #qemu
 
-.PHONY: all clean run install leaktest memgraph
+.PHONY: all clean run install leaktest memgraph docs
 
 all: $(executable)
 
 install:
-	sudo pacman -S base-devel doxygen graphviz valgrind cmocka massif-visualizer
+	@echo installing libutp
+	@rm -rf libutp
+	@git clone https://github.com/bittorrent/libutp
+	@cd libutp && make
+	@cp libutp/libutp.a lib
+	@cp libutp/libutp.so lib
+	@cp libutp/*.h src/include
+	@rm -rf libutp
+	
+
+docs:
+	@doxygen
 
 memgraph: $(executable)
 	valgrind --tool=massif --massif-out-file=massif.out.1 $(executable) $(TESTFILE) $(TESTRES)
