@@ -1,5 +1,10 @@
 <map id="include/utp_types.h" name="include/utp_types.h">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,155,32"/>
-<area shape="rect" id="node2" href="$utp_8h.html" title=" " alt="" coords="27,80,133,107"/>
-<area shape="rect" id="node3" href="$utpwrapper_8c.html" title=" " alt="" coords="27,155,133,181"/>
+<area shape="rect" id="node1" title=" " alt="" coords="373,5,522,32"/>
+<area shape="rect" id="node2" href="$utp_8h.html" title=" " alt="" coords="165,80,271,107"/>
+<area shape="rect" id="node6" href="$utp__templates_8h.html" title=" " alt="" coords="295,80,474,107"/>
+<area shape="rect" id="node7" href="$utp__hash_8h.html" title=" " alt="" coords="437,155,581,181"/>
+<area shape="rect" id="node8" href="$utp__packedsockaddr_8h.html" title=" " alt="" coords="549,80,767,107"/>
+<area shape="rect" id="node3" href="$utp__callbacks_8h.html" title=" " alt="" coords="5,155,180,181"/>
+<area shape="rect" id="node4" href="$utp__internal_8h.html" title=" " alt="" coords="227,229,390,256"/>
+<area shape="rect" id="node5" href="$utpwrapper_8c.html" title=" " alt="" coords="255,155,362,181"/>
 </map>
