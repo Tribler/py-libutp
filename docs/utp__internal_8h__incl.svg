@@ -223,8 +223,8 @@ var sectionId = 'dynsection-0';
 <!-- Node7 -->
 <g id="node8" class="node">
 <title>Node7</title>
-<g id="a_node8"><a xlink:title=" ">
-<polygon fill="#ffffff" stroke="#bfbfbf" points="17.6922,-.5 17.6922,-19.5 89.6922,-19.5 89.6922,-.5 17.6922,-.5"/>
+<g id="a_node8"><a xlink:href="in_8h.html" target="_top" xlink:title=" ">
+<polygon fill="#ffffff" stroke="#000000" points="17.6922,-.5 17.6922,-19.5 89.6922,-19.5 89.6922,-.5 17.6922,-.5"/>
 <text text-anchor="middle" x="53.6922" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">netinet/in.h</text>
 </a>
 </g>
@@ -268,8 +268,8 @@ var sectionId = 'dynsection-0';
 <!-- Node10 -->
 <g id="node11" class="node">
 <title>Node10</title>
-<g id="a_node11"><a xlink:title=" ">
-<polygon fill="#ffffff" stroke="#bfbfbf" points="270.1922,-.5 270.1922,-19.5 347.1922,-19.5 347.1922,-.5 270.1922,-.5"/>
+<g id="a_node11"><a xlink:href="socket_8h.html" target="_top" xlink:title=" ">
+<polygon fill="#ffffff" stroke="#000000" points="270.1922,-.5 270.1922,-19.5 347.1922,-19.5 347.1922,-.5 270.1922,-.5"/>
 <text text-anchor="middle" x="308.6922" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">sys/socket.h</text>
 </a>
 </g>

@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['o_5fcloexec',['O_CLOEXEC',['../fcntl_8h.html#ad6d8fbe4e494b4dbe051612572d3f757',1,'fcntl.h']]],
+  ['o_5fnonblock',['O_NONBLOCK',['../fcntl_8h.html#a39d33ce33804efd4d52606d59071c6d8',1,'fcntl.h']]],
   ['operator_20t',['operator T',['../structbig__endian.html#a75a501de9dec9546916bb2cb9dae23b6',1,'big_endian']]],
   ['operator_21_3d',['operator!=',['../structPackedSockAddr.html#a6fb773374e6f82445e6747b907ebdfad',1,'PackedSockAddr::operator!=()'],['../utp__packedsockaddr_8h.html#a89201d8f269bc33d80112a8f82257b0b',1,'operator!=():&#160;utp_packedsockaddr.h']]],
   ['operator_3d',['operator=',['../structbig__endian.html#a4a663903452b18877f7c5ae13b0b13d7',1,'big_endian']]],

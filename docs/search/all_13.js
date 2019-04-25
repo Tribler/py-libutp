@@ -9,6 +9,8 @@ var searchData=
   ['uint8',['uint8',['../utp__types_8h.html#adde6aaee8457bee49c2a92621fe22b79',1,'utp_types.h']]],
   ['used',['used',['../structutp__hash__t.html#a7ba1877b82492cc360c1cdec871137e6',1,'utp_hash_t']]],
   ['userdata',['userdata',['../structstruct__utp__context.html#a3cb3afefe63eabdfa2e065eb87c5ce83',1,'struct_utp_context']]],
+  ['util_2ec',['util.c',['../util_8c.html',1,'']]],
+  ['util_2eh',['util.h',['../util_8h.html',1,'']]],
   ['utp_2eh',['utp.h',['../utp_8h.html',1,'']]],
   ['utp_5farray_5fsize',['UTP_ARRAY_SIZE',['../utp_8h.html#abc6126af1d45847bc59afa0aa3216b04ae874d32882d2c132e59571bf8c181aec',1,'utp.h']]],
   ['utp_5fcall_5fget_5fmicroseconds',['utp_call_get_microseconds',['../utp__callbacks_8h.html#a5d5b6aa7a7ae42c2ad904c2cf3689474',1,'utp_callbacks.h']]],
@@ -128,6 +130,5 @@ var searchData=
   ['utphashtable_3c_20utpsocketkey_2c_20utpsocketkeydata_20_3e',['utpHashTable&lt; UTPSocketKey, UTPSocketKeyData &gt;',['../classutpHashTable.html',1,'']]],
   ['utpsocketht',['UTPSocketHT',['../structUTPSocketHT.html',1,'UTPSocketHT'],['../structUTPSocketHT.html#a1754f0e0721394d4bfec0af51a347f06',1,'UTPSocketHT::UTPSocketHT()']]],
   ['utpsocketkey',['UTPSocketKey',['../structUTPSocketKey.html',1,'UTPSocketKey'],['../structUTPSocketKey.html#ad7d3fff71d5800119a13d317d53e34b5',1,'UTPSocketKey::UTPSocketKey()']]],
-  ['utpsocketkeydata',['UTPSocketKeyData',['../structUTPSocketKeyData.html',1,'']]],
-  ['utpwrapper_2ec',['utpwrapper.c',['../utpwrapper_8c.html',1,'']]]
+  ['utpsocketkeydata',['UTPSocketKeyData',['../structUTPSocketKeyData.html',1,'']]]
 ];
