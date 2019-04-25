@@ -6,8 +6,6 @@ CC = gcc
 ASM = gcc
 NASM = nasm
 
-TESTFILE = test.hel
-TESTRES = test.helc
 
 programname = utpwrapper
 
@@ -17,6 +15,7 @@ test: executable_fullname := $(programname)-$(version)-$(arch)-test
 testmemgraph: executable_fullname := $(programname)-$(version)-$(arch)-test
 debug: executable_fullname := $(programname)-$(version)-$(arch)-debug
 
+lib: executable := pylibutp/$(executable_fullname).so
 executable := bin/$(executable_fullname)
 
 #include paths
@@ -24,6 +23,7 @@ dirs = $(shell find src/ -type d -print)
 includedirs :=  $(sort $(foreach dir, $(foreach dir1, $(dirs), $(shell dirname $(dir1))), $(wildcard $(dir)/include)))
 
 #linkerflags (include lm (math.h) for advanced math)
+lib: LFLAGS = -L./lib -shared 
 LFLAGS = -L./lib
 LIBRARIES = -lm -lutp
 
@@ -72,19 +72,20 @@ install:
 	@cp libutp/*.h src/include
 	@rm -rf libutp
 	
+	
 
 docs:
 	@doxygen
 
 memgraph: $(executable)
-	valgrind --tool=massif --massif-out-file=massif.out.1 $(executable) $(TESTFILE) $(TESTRES)
+	valgrind --tool=massif --massif-out-file=massif.out.1 $(executable) 
 	massif-visualizer massif.out.1
 
 leaktest: $(executable)
-	valgrind --error-exitcode=1 --leak-check=full --show-leak-kinds=all $(executable) $(TESTFILE) $(TESTRES)
+	valgrind --error-exitcode=1 --leak-check=full --show-leak-kinds=all $(executable) 
 
 debug: $(executable)
-	gdb --args $(executable) $(TESTFILE) $(TESTRES)
+	gdb --args $(executable) 
 
 clean:
 	@rm -r build
@@ -92,8 +93,9 @@ clean:
 
 run: $(executable)
 	@echo starting
-	@./$(executable) $(TESTFILE) $(TESTRES)
+	@./$(executable)
 
+lib: $(executable)
 
 
 $(executable): $(assembly_object_files) $(c_object_files) $(nassembly_object_files)
