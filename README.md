@@ -1,5 +1,5 @@
 
-# ptyhon wrapper for libutp
+# python wrapper for libutp
 
 
 The only existing one is terrible and has no documentation. 
@@ -30,3 +30,9 @@ and then run
 make lib
 ```
 To compile the c library. After this is done you can import the python library as normal. 
+
+
+# windows compatibility
+
+hoping to achive this through these:
+https://github.com/libressl-portable/portable/tree/master/include/compat
