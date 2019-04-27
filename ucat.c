@@ -456,6 +456,7 @@ void handle_icmp()
 
 			debug("msg_flags: %d", msg.msg_flags);
 			if (o_debug) {
+
 				if (msg.msg_flags & MSG_TRUNC)		fprintf(stderr, " MSG_TRUNC");
 				if (msg.msg_flags & MSG_CTRUNC)		fprintf(stderr, " MSG_CTRUNC");
 				if (msg.msg_flags & MSG_EOR)		fprintf(stderr, " MSG_EOR");

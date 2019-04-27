@@ -23,7 +23,7 @@ dirs = $(shell find src/ -type d -print)
 includedirs :=  $(sort $(foreach dir, $(foreach dir1, $(dirs), $(shell dirname $(dir1))), $(wildcard $(dir)/include)))
 
 #linkerflags (include lm (math.h) for advanced math)
-lib: LFLAGS = -L./lib -shared 
+lib: LFLAGS = -g -L./lib -shared 
 LFLAGS = -L./lib 
 LIBRARIES = -lm -lutp
 
@@ -32,7 +32,7 @@ testmemgraph: LIBRARIES = -lm
 
 
 #cflags
-CFLAGS= -O2 -Wall $(foreach dir, $(includedirs), -I./$(dir))  -fPIC
+CFLAGS= -g -O0 -Wall $(foreach dir, $(includedirs), -I./$(dir))  -fPIC
 debug: CFLAGS= -g -O0 -Wall $(foreach dir, $(includedirs), -I./$(dir))
 test: CFLAGS= -g -O2 -Wall -DTEST -fprofile-arcs -ftest-coverage $(foreach dir, $(includedirs), -I./$(dir)) 
 testmemgraph: CFLAGS=-g -O2 -Wall -DTEST $(foreach dir, $(includedirs), -I./$(dir)) 

@@ -13,19 +13,19 @@
 
 uint64 callback_on_read(utp_callback_arguments *a) {
     printf("read something!\n");
-    // const unsigned char *p;
-    // ssize_t len, left;
+    const unsigned char *p;
+    ssize_t len, left;
 
-    // left = a->len;
-    // p = a->buf;
+    left = a->len;
+    p = a->buf;
 
-    // while (left) {
-    // 	len = write(STDOUT_FILENO, p, left);
-    // 	left -= len;
-    // 	p += len;
-    // 	debug("Wrote %d bytes, %d left\n", len, left);
-    // }
-    // utp_read_drained(a->socket);
+    while (left) {
+    	len = write(STDOUT_FILENO, p, left);
+    	left -= len;
+    	p += len;
+    	printf("Wrote %ld bytes, %ld left\n", len, left);
+    }
+    utp_read_drained(a->socket);
     return 0;
 }
 
@@ -92,17 +92,22 @@ uint64 callback_on_state_change(utp_callback_arguments *a) {
 }
 
 uint64 callback_sendto(utp_callback_arguments *a) {
-    // struct sockaddr_in *sin = (struct sockaddr_in *) a->address;
+    struct sockaddr_in *sin = (struct sockaddr_in *) a->address;
 
-    // debug("sendto: %zd byte packet to %s:%d%s\n", a->len,
-    // inet_ntoa(sin->sin_addr), ntohs(sin->sin_port), 			(a->flags &
-    // UTP_UDP_DONTFRAG) ? "  (DF bit requested, but not yet implemented)" :
-    // "");
+    printf(
+        "sendto: %zd byte packet to %s:%d%s\n", 
+        a->len,
+        inet_ntoa(sin->sin_addr), 
+        ntohs(sin->sin_port),
+        (a->flags & UTP_UDP_DONTFRAG) 
+            ? "  (DF bit requested, but not yet implemented)" 
+            : ""
+    );
 
-    // if (o_debug >= 3)
-    // 	hexdump(a->buf, a->len);
+   	hexdump(a->buf, a->len);
+    int fd = get_contextpair_by_context(a->context)->fd;
 
-    // sendto(fd, a->buf, a->len, 0, a->address, a->address_len);
+    sendto(fd, a->buf, a->len, 0, a->address, a->address_len);
     return 0;
 }
 
