@@ -11,7 +11,6 @@ import ctypes
 import sys
 from .config import Config
 
-
 # load the c library
 cutplib = ctypes.cdll.LoadLibrary(Config.UTPWRAPPER_LIB)
 

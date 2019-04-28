@@ -13,14 +13,14 @@
 #include <utp.h>
 
 #include <callbacks.h>
+#include <hashmap.h>
 #include <util.h>
 
-#define listenaddr "0.0.0.0"
-#define randomport "0"
+int error;
 
-void serve(char *port) {
-    int error;
+void init(utp_state * config){
 
+    //handle interrupts
     struct sigaction sigIntHandler;
 	sigIntHandler.sa_handler = sigint_handler;
 	sigemptyset(&sigIntHandler.sa_mask);
@@ -29,8 +29,12 @@ void serve(char *port) {
 
 
     // create a unix socket and check if it was created
-    int socket_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if (socket_fd < 0) {
+
+    if(config->socket_fd == -1){
+        config->socket_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+    }
+    if (config->socket_fd < 0) {
         die("invalid socket");
     }
 
@@ -45,14 +49,13 @@ void serve(char *port) {
     hints.ai_protocol = IPPROTO_UDP;
 
 
-
     // get the address to listen on
-    if ((error = getaddrinfo(listenaddr, port, &hints, &res))) {
+    if ((error = getaddrinfo(config->listenaddress, config->listenport, &hints, &res))) {
         die("error while calling getaddrinfo: %s\n", gai_strerror(error));
     }
 
     
-    if (bind(socket_fd, res->ai_addr, res->ai_addrlen) != 0) {
+    if (bind(config->socket_fd, res->ai_addr, res->ai_addrlen) != 0) {
         die(">error while calling bind (%s)\n", strerror(errno));
     }
 
@@ -60,29 +63,60 @@ void serve(char *port) {
 
     struct sockaddr_in sin;
     socklen_t len = sizeof(sin);
-    if (getsockname(socket_fd, (struct sockaddr *)&sin, &len) != 0) {
+    if (getsockname(config->socket_fd, (struct sockaddr *)&sin, &len) != 0) {
         die("couldn't get socket name");
     }
-    printf("Bound to local %s:%d\n", inet_ntoa(sin.sin_addr),
-           ntohs(sin.sin_port));
+    printf("Bound to local %s:%d\n", inet_ntoa(sin.sin_addr), ntohs(sin.sin_port));
+
 
     // initialize utp and create an utp socket
-    utp_context *ctx = utp_init(2);
-    register_contextpair(ctx,socket_fd);
+    config->context = utp_init(2);
+    //register the config so it can be looked up by its context
+    utp_store_state(config);
 
     // set up callbacks mostly for debug but python will want these too
-    utp_set_callback(ctx, UTP_LOG, &callback_log);
-    utp_set_callback(ctx, UTP_SENDTO, &callback_sendto);
-    utp_set_callback(ctx, UTP_ON_ERROR, &callback_on_error);
-    utp_set_callback(ctx, UTP_ON_STATE_CHANGE, &callback_on_state_change);
-    utp_set_callback(ctx, UTP_ON_READ, &callback_on_read);
-    utp_set_callback(ctx, UTP_ON_FIREWALL, &callback_on_firewall);
-    utp_set_callback(ctx, UTP_ON_ACCEPT, &callback_on_accept);
+    utp_set_callback(config->context, UTP_LOG, &callback_log);
+    utp_set_callback(config->context, UTP_SENDTO, &callback_sendto);
+    utp_set_callback(config->context, UTP_ON_ERROR, &callback_on_error);
+    utp_set_callback(config->context, UTP_ON_STATE_CHANGE, &callback_on_state_change);
+    utp_set_callback(config->context, UTP_ON_READ, &callback_on_read);
+    utp_set_callback(config->context, UTP_ON_FIREWALL, &callback_on_firewall);
+    utp_set_callback(config->context, UTP_ON_ACCEPT, &callback_on_accept);
 
     // debug options
-    utp_context_set_option(ctx, UTP_LOG_NORMAL, 1);
-    utp_context_set_option(ctx, UTP_LOG_MTU, 1);
-    utp_context_set_option(ctx, UTP_LOG_DEBUG, 1);
+    utp_context_set_option(config->context, UTP_LOG_NORMAL, 1);
+    utp_context_set_option(config->context, UTP_LOG_MTU, 1);
+    utp_context_set_option(config->context, UTP_LOG_DEBUG, 1);
+
+
+    if(!config->listen){
+
+        // set up the sending socket. everything above was just for listening
+        config->socket = utp_create_socket(config->context);
+
+        // get the address to connect to
+        if ((error = getaddrinfo(config->connectingaddress, config->connectingport, &hints, &res))) {
+            die("error while calling getaddrinfo: %s\n", gai_strerror(error));
+        }
+
+        struct sockaddr_in *sin_remote;
+        sin_remote = (struct sockaddr_in *)res->ai_addr;
+        printf("Connecting to %s:%d\n", inet_ntoa(sin_remote->sin_addr),
+            ntohs(sin_remote->sin_port));
+
+        utp_connect(config->socket, res->ai_addr, res->ai_addrlen);
+        freeaddrinfo(res);
+    }
+}
+
+
+void serve(char *port) {
+
+    utp_state * config = utp_create_default_state();
+    config->listenport = port;
+    
+
+    init(config);
 
     // setup complete
 
@@ -95,7 +129,7 @@ void serve(char *port) {
     // socket)
     struct pollfd p[1];
 
-    p[0].fd = socket_fd;
+    p[0].fd = config->socket_fd;
     p[0].events = POLLIN;
 
     while (1) {
@@ -116,12 +150,12 @@ void serve(char *port) {
                 // receive a byte
                 if ((p[0].revents & POLLIN) == POLLIN) {
                     ssize_t len = recvfrom(
-                        socket_fd, socket_data, sizeof(socket_data),
+                        config->socket_fd, socket_data, sizeof(socket_data),
                         MSG_DONTWAIT, (struct sockaddr *)&src_addr, &addrlen);
                     if (len < 0) {
                         if (errno == EAGAIN ||
                             errno == EWOULDBLOCK) { // connection ended
-                            utp_issue_deferred_acks(ctx);
+                            utp_issue_deferred_acks(config->context);
                             break;
                         } else {
                             // serious error
@@ -136,100 +170,25 @@ void serve(char *port) {
                            ntohs(src_addr.sin_port));
                     hexdump(socket_data, len);
                     
-                    if (! utp_process_udp(ctx, socket_data, len, (struct sockaddr *)&src_addr, addrlen)){
+                    if (! utp_process_udp(config->context, socket_data, len, (struct sockaddr *)&src_addr, addrlen)){
                         printf("UDP packet not handled by UTP.  Ignoring.\n");
                     }
                 }
             }
         }
-        utp_check_timeouts(ctx);
+        utp_check_timeouts(config->context);
     }
 }
 
 void client(char *addr, char *port, char *whattosend) {
-    struct sigaction sigIntHandler;
-	sigIntHandler.sa_handler = sigint_handler;
-	sigemptyset(&sigIntHandler.sa_mask);
-	sigIntHandler.sa_flags = 0;
-    sigaction(SIGINT, &sigIntHandler, NULL);
+    utp_state * config = utp_create_default_state();
+    config->listen = 0;
+    config->connectingaddress = "127.0.0.1";
+    config->connectingport = "8000";
+
+    init(config);    
 
 
-    printf("address: %s\n", addr);
-    printf("port: %s\n", port);
-
-    int error;
-
-    // create a unix socket and check if it was created
-    int socket_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if (socket_fd < 0) {
-        die("invalid socket");
-    }
-
-    // the hints structure specifies the criteria
-    // for selecting a socket address
-    // see http://man7.org/linux/man-pages/man3/gai_strerror.3.html
-    // res will contain the actual address info3
-    struct addrinfo hints, *res;
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_DGRAM;
-    hints.ai_protocol = IPPROTO_UDP;
-
-    // get the address to listen on
-    if ((error = getaddrinfo(listenaddr, randomport, &hints, &res))) {
-        die("error while calling getaddrinfo: %s\n", gai_strerror(error));
-    }
-
-    if (bind(socket_fd, res->ai_addr, res->ai_addrlen) != 0) {
-        die("error while calling bind");
-    }
-
-    freeaddrinfo(res);
-
-    struct sockaddr_in sin;
-    socklen_t len = sizeof(sin);
-    if (getsockname(socket_fd, (struct sockaddr *)&sin, &len) != 0) {
-        die("couldn't get socket name");
-    }
-    printf("Bound to local %s:%d\n", inet_ntoa(sin.sin_addr),
-           ntohs(sin.sin_port));
-
-    // initialize utp and create an utp socket
-    utp_context *ctx = utp_init(2);
-    register_contextpair(ctx,socket_fd);
-    
-
-    utp_set_callback(ctx, UTP_LOG, &callback_log);
-    utp_set_callback(ctx, UTP_SENDTO, &callback_sendto);
-    utp_set_callback(ctx, UTP_ON_ERROR, &callback_on_error);
-    utp_set_callback(ctx, UTP_ON_STATE_CHANGE, &callback_on_state_change);
-    utp_set_callback(ctx, UTP_ON_READ, &callback_on_read);
-    utp_set_callback(ctx, UTP_ON_FIREWALL, &callback_on_firewall);
-    utp_set_callback(ctx, UTP_ON_ACCEPT, &callback_on_accept);
-
-    // debug options
-    utp_context_set_option(ctx, UTP_LOG_NORMAL, 1);
-    utp_context_set_option(ctx, UTP_LOG_MTU, 1);
-    utp_context_set_option(ctx, UTP_LOG_DEBUG, 1);
-
-
-    // set up the sending socket. everything above was just for listening
-    utp_socket *sock = utp_create_socket(ctx);
-
-    // get the address to connect to
-    if ((error = getaddrinfo(addr, port, &hints, &res))) {
-        die("error while calling getaddrinfo: %s\n", gai_strerror(error));
-    }
-
-    struct sockaddr_in *sin_remote;
-    sin_remote = (struct sockaddr_in *)res->ai_addr;
-    printf("Connecting to %s:%d\n", inet_ntoa(sin_remote->sin_addr),
-           ntohs(sin_remote->sin_port));
-
-    utp_connect(sock, res->ai_addr, res->ai_addrlen);
-    freeaddrinfo(res);
-
-    // send some stuff
     // setup complete
 
     unsigned char socket_data[4096];
@@ -241,7 +200,7 @@ void client(char *addr, char *port, char *whattosend) {
     // socket)
     struct pollfd p[1];
 
-    p[0].fd = socket_fd;
+    p[0].fd = config->socket_fd;
     p[0].events = POLLIN;
 
 
@@ -249,7 +208,7 @@ void client(char *addr, char *port, char *whattosend) {
     char *notyetsentdata = whattosend; // all
 
     while (notyetsentdata < whattosend + datalength) {
-int ret = poll(p, 1, 500);
+        int ret = poll(p, 1, 500);
         // error handling
         if (ret < 0) {
             if (errno == EINTR) {
@@ -266,12 +225,12 @@ int ret = poll(p, 1, 500);
                 // receive a byte
                 if ((p[0].revents & POLLIN) == POLLIN) {
                     ssize_t len = recvfrom(
-                        socket_fd, socket_data, sizeof(socket_data),
+                        config->socket_fd, socket_data, sizeof(socket_data),
                         MSG_DONTWAIT, (struct sockaddr *)&src_addr, &addrlen);
                     if (len < 0) {
                         if (errno == EAGAIN ||
                             errno == EWOULDBLOCK) { // connection ended
-                            utp_issue_deferred_acks(ctx);
+                            utp_issue_deferred_acks(config->context);
                             break;
                         } else {
                             // serious error
@@ -286,7 +245,7 @@ int ret = poll(p, 1, 500);
                            ntohs(src_addr.sin_port));
                     hexdump(socket_data, len);
                     
-                    if (! utp_process_udp(ctx, socket_data, len, (struct sockaddr *)&src_addr, addrlen)){
+                    if (! utp_process_udp(config->context, socket_data, len, (struct sockaddr *)&src_addr, addrlen)){
                         printf("UDP packet not handled by UTP.  Ignoring.\n");
                     }
                 }
@@ -299,7 +258,7 @@ int ret = poll(p, 1, 500);
             // notyetsentdata. basically it's the pointer to the end of the
             // whattosend string minus the pointer to the start of notyetsent.
             // the loop stops when these pointers are equal.
-            sent = utp_write(sock, notyetsentdata,
+            sent = utp_write(config->socket, notyetsentdata,
                             whattosend + datalength - notyetsentdata);
             if (sent == 0) {
                 printf("socket no longer writable\n");
@@ -321,7 +280,7 @@ int ret = poll(p, 1, 500);
         }
     }
 
-    utp_close(sock);
+    utp_close(config->socket);
     return;
 }
 
@@ -329,6 +288,8 @@ int ret = poll(p, 1, 500);
  * Entry point of the program
  */
 int main(int argc, char *argv[]) {
-    // client("127.0.0.1","8000","hello");
-    serve("8000");
+    client("127.0.0.1","8000","hello");
+    // serve("8000");
+
+
 }

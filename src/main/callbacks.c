@@ -69,6 +69,7 @@ uint64 callback_on_state_change(utp_callback_arguments *a) {
 }
 
 uint64 callback_sendto(utp_callback_arguments *a) {
+    printf("broken rn\n");
     struct sockaddr_in *sin = (struct sockaddr_in *) a->address;
 
     printf(
@@ -82,7 +83,7 @@ uint64 callback_sendto(utp_callback_arguments *a) {
     );
 
    	hexdump(a->buf, a->len);
-    int fd = get_contextpair_by_context(a->context)->fd;
+    int fd = utp_get_state_by_context(a->context)->socket_fd;
 
     sendto(fd, a->buf, a->len, 0, a->address, a->address_len);
     return 0;
