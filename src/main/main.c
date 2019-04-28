@@ -21,6 +21,12 @@
 void serve(char *port) {
     int error;
 
+    struct sigaction sigIntHandler;
+	sigIntHandler.sa_handler = sigint_handler;
+	sigemptyset(&sigIntHandler.sa_mask);
+	sigIntHandler.sa_flags = 0;
+    sigaction(SIGINT, &sigIntHandler, NULL);
+
 
     // create a unix socket and check if it was created
     int socket_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -62,6 +68,7 @@ void serve(char *port) {
 
     // initialize utp and create an utp socket
     utp_context *ctx = utp_init(2);
+    register_contextpair(ctx,socket_fd);
 
     // set up callbacks mostly for debug but python will want these too
     utp_set_callback(ctx, UTP_LOG, &callback_log);
@@ -96,10 +103,7 @@ void serve(char *port) {
         // error handling
         if (ret < 0) {
             if (errno == EINTR) {
-                // printf("Well... something went wrong. Dont worry!\n");
-                die("exiting due to sigint probably. remove this in "
-                    "production as also "
-                    "other things can trigger this.\n");
+                printf("Well... something went wrong. Dont worry!\n");
             } else {
                 die("Something went seriously wrong while polling. Bye!");
             }
@@ -108,7 +112,6 @@ void serve(char *port) {
             printf("poll timeout, retrying...\n");
         } else {
             while (1) {
-                sleep(0.5);
 
                 // receive a byte
                 if ((p[0].revents & POLLIN) == POLLIN) {
@@ -132,6 +135,10 @@ void serve(char *port) {
                            inet_ntoa(src_addr.sin_addr),
                            ntohs(src_addr.sin_port));
                     hexdump(socket_data, len);
+                    
+                    if (! utp_process_udp(ctx, socket_data, len, (struct sockaddr *)&src_addr, addrlen)){
+                        printf("UDP packet not handled by UTP.  Ignoring.\n");
+                    }
                 }
             }
         }
@@ -205,6 +212,7 @@ void client(char *addr, char *port, char *whattosend) {
     utp_context_set_option(ctx, UTP_LOG_MTU, 1);
     utp_context_set_option(ctx, UTP_LOG_DEBUG, 1);
 
+
     // set up the sending socket. everything above was just for listening
     utp_socket *sock = utp_create_socket(ctx);
 
@@ -222,34 +230,94 @@ void client(char *addr, char *port, char *whattosend) {
     freeaddrinfo(res);
 
     // send some stuff
+    // setup complete
+
+    unsigned char socket_data[4096];
+    // receiving address
+    struct sockaddr_in src_addr;
+    socklen_t addrlen = sizeof(src_addr);
+
+    // which file descriptor to poll and what to wait for (input/POLLIN on the
+    // socket)
+    struct pollfd p[1];
+
+    p[0].fd = socket_fd;
+    p[0].events = POLLIN;
+
+
     size_t datalength = strlen(whattosend);
     char *notyetsentdata = whattosend; // all
 
     while (notyetsentdata < whattosend + datalength) {
-        // number of bytes sent this time.
-        size_t sent;
-        // write to socked_fd with whattosend. last argument is the  left in
-        // notyetsentdata. basically it's the pointer to the end of the
-        // whattosend string minus the pointer to the start of notyetsent.
-        // the loop stops when these pointers are equal.
-        sent = utp_write(sock, notyetsentdata,
-                         whattosend + datalength - notyetsentdata);
-        if (sent == 0) {
-            printf("socket no longer writable\n");
-            sleep(1);
-            continue;
-        }
-
-        // keep track of how many bytes of the not yet sent data has been sent
-        // this call so we can pick up again later
-        notyetsentdata += sent;
-
-        if (notyetsentdata == whattosend + datalength) {
-            // say we are done. next iteration we exit.
-            printf("wrote %zd bytes; buffer now empty\n", sent);
+int ret = poll(p, 1, 500);
+        // error handling
+        if (ret < 0) {
+            if (errno == EINTR) {
+                printf("Well... something went wrong. Dont worry!\n");
+            } else {
+                die("Something went seriously wrong while polling. Bye!");
+            }
+        } else if (ret == 0) {
+            // socket timed out
+            printf("poll timeout, retrying...\n");
         } else {
-            printf("wrote %zd bytes; %ld bytes left in buffer\n", sent,
-                   whattosend + datalength - notyetsentdata);
+            while (1) {
+
+                // receive a byte
+                if ((p[0].revents & POLLIN) == POLLIN) {
+                    ssize_t len = recvfrom(
+                        socket_fd, socket_data, sizeof(socket_data),
+                        MSG_DONTWAIT, (struct sockaddr *)&src_addr, &addrlen);
+                    if (len < 0) {
+                        if (errno == EAGAIN ||
+                            errno == EWOULDBLOCK) { // connection ended
+                            utp_issue_deferred_acks(ctx);
+                            break;
+                        } else {
+                            // serious error
+                            die("receiving failed");
+                        }
+                    }
+
+                    // everything was fine, we received something
+                    // which is in the socket_data string
+                    printf("Received %zd byte UDP packet from %s:%d\n", len,
+                           inet_ntoa(src_addr.sin_addr),
+                           ntohs(src_addr.sin_port));
+                    hexdump(socket_data, len);
+                    
+                    if (! utp_process_udp(ctx, socket_data, len, (struct sockaddr *)&src_addr, addrlen)){
+                        printf("UDP packet not handled by UTP.  Ignoring.\n");
+                    }
+                }
+            }
+        
+        
+            // number of bytes sent this time.
+            size_t sent;
+            // write to socked_fd with whattosend. last argument is the  left in
+            // notyetsentdata. basically it's the pointer to the end of the
+            // whattosend string minus the pointer to the start of notyetsent.
+            // the loop stops when these pointers are equal.
+            sent = utp_write(sock, notyetsentdata,
+                            whattosend + datalength - notyetsentdata);
+            if (sent == 0) {
+                printf("socket no longer writable\n");
+                sleep(1);
+                continue;
+            }
+
+            // keep track of how many bytes of the not yet sent data has been sent
+            // this call so we can pick up again later
+            notyetsentdata += sent;
+
+            if (notyetsentdata == whattosend + datalength) {
+                // say we are done. next iteration we exit.
+                printf("wrote %zd bytes; buffer now empty\n", sent);
+            } else {
+                printf("wrote %zd bytes; %ld bytes left in buffer\n", sent,
+                    whattosend + datalength - notyetsentdata);
+            }
         }
     }
 

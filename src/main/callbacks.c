@@ -47,46 +47,23 @@ uint64 callback_on_error(utp_callback_arguments *a) {
 
 uint64 callback_on_state_change(utp_callback_arguments *a) {
     printf("state changed to %d: %s\n", a->state, utp_state_names[a->state]);
-    // utp_socket_stats *stats;
+    utp_socket_stats *stats;
 
-    // switch (a->state) {
-    // 	case UTP_STATE_CONNECT:
-    // 	case UTP_STATE_WRITABLE:
-    // 		write_data();
-    // 		break;
+    switch (a->state) {
+    	case UTP_STATE_CONNECT:
+    	case UTP_STATE_WRITABLE:
+            printf("writiable!\n");
+    		// write_data();
+    		break;
 
-    // 	case UTP_STATE_EOF:
-    // 		debug("Received EOF from socket\n");
-    // 		utp_eof_flag = 1;
-    // 		if (utp_shutdown_flag) {
-    // 			utp_close(a->socket);
-    // 		}
-    // 		break;
+    	case UTP_STATE_EOF:
+            printf("eof");
+    		break;
 
-    // 	case UTP_STATE_DESTROYING:
-    // 		debug("UTP socket is being destroyed; exiting\n");
-
-    // 		stats = utp_get_stats(a->socket);
-    // 		if (stats) {
-    // 			debug("Socket Statistics:\n");
-    // 			debug("    Bytes sent:          %d\n",
-    // stats->nbytes_xmit); 			debug("    Bytes received:      %d\n",
-    // stats->nbytes_recv); 			debug("    Packets received:    %d\n",
-    // stats->nrecv); 			debug("    Packets sent:        %d\n", stats->nxmit);
-    // 			debug("    Duplicate receives:  %d\n", stats->nduprecv);
-    // 			debug("    Retransmits:         %d\n", stats->rexmit);
-    // 			debug("    Fast Retransmits:    %d\n",
-    // stats->fastrexmit); 			debug("    Best guess at MTU:   %d\n",
-    // stats->mtu_guess);
-    // 		}
-    // 		else {
-    // 			debug("No socket statistics available\n");
-    // 		}
-
-    // 		s = NULL;
-    // 		quit_flag = 1;
-    // 		break;
-    // }
+    	case UTP_STATE_DESTROYING:
+            printf("shutdown");
+    		break;
+    }
 
     return 0;
 }
