@@ -16,9 +16,10 @@
 #include <hashmap.h>
 #include <util.h>
 
-int error;
 
 void init(utp_state * config){
+
+    int error;
 
     //handle interrupts
     struct sigaction sigIntHandler;
