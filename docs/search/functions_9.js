@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['network_5fto_5fhost',['network_to_host',['../namespaceaux.html#a94e6ef1cb66eb8ec3ade49ef46a0a2cf',1,'aux::network_to_host(uint16 i)'],['../namespaceaux.html#a590ea077824ce90fee656b5373a08ea2',1,'aux::network_to_host(uint32 i)'],['../namespaceaux.html#a409133b9fb431b1cd02a118266dfbe61',1,'aux::network_to_host(int32 i)']]]
+  ['main',['main',['../main_8c.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main.c']]],
+  ['moveuplast',['MoveUpLast',['../classArray.html#ad9a37a0e9db0638f995c7af0e56a269e',1,'Array']]],
+  ['moveuplastexist',['MoveUpLastExist',['../classArray.html#a2fa0f2d8f8545e95832b083b3f310871',1,'Array']]]
 ];

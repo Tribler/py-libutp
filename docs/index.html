@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.15"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Py-libutp: ptyhon wrapper for libutp</title>
+<title>Py-libutp: python wrapper for libutp</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -63,7 +63,7 @@ $(function() {
 
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">ptyhon wrapper for libutp </div>  </div>
+<div class="title">python wrapper for libutp </div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>The only existing one is terrible and has no documentation.</p>
@@ -75,13 +75,19 @@ $(function() {
 <li>doxygen</li>
 <li>graphviz</li>
 <li>valgrind</li>
-<li>massif-visualizer </li>
+<li>massif-visualizer</li>
+<li>git</li>
 </ul>
+<h1>building:</h1>
+<p>run </p><div class="fragment"><div class="line">make install</div></div><!-- fragment --><p> to install libutp on your system first (uses git)</p>
+<p>and then run </p><div class="fragment"><div class="line">make lib</div></div><!-- fragment --><p> To compile the c library. After this is done you can import the python library as normal.</p>
+<h1>windows compatibility</h1>
+<p>hoping to achive this through these: <a href="https://github.com/libressl-portable/portable/tree/master/include/compat">https://github.com/libressl-portable/portable/tree/master/include/compat</a> </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 25 2019 17:10:49 for Py-libutp by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 26 2019 01:08:58 for Py-libutp by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.15
 </small></address>

@@ -51,8 +51,8 @@
 <!-- Node2 -->
 <g id="node3" class="node">
 <title>Node2</title>
-<g id="a_node3"><a xlink:title=" ">
-<polygon fill="#ffffff" stroke="#bfbfbf" points="0,-.5 0,-19.5 72,-19.5 72,-.5 0,-.5"/>
+<g id="a_node3"><a xlink:href="in_8h.html" target="_top" xlink:title=" ">
+<polygon fill="#ffffff" stroke="#000000" points="0,-.5 0,-19.5 72,-19.5 72,-.5 0,-.5"/>
 <text text-anchor="middle" x="36" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">netinet/in.h</text>
 </a>
 </g>
@@ -96,8 +96,8 @@
 <!-- Node5 -->
 <g id="node6" class="node">
 <title>Node5</title>
-<g id="a_node6"><a xlink:title=" ">
-<polygon fill="#ffffff" stroke="#bfbfbf" points="252.5,-.5 252.5,-19.5 329.5,-19.5 329.5,-.5 252.5,-.5"/>
+<g id="a_node6"><a xlink:href="socket_8h.html" target="_top" xlink:title=" ">
+<polygon fill="#ffffff" stroke="#000000" points="252.5,-.5 252.5,-19.5 329.5,-19.5 329.5,-.5 252.5,-.5"/>
 <text text-anchor="middle" x="291" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#000000">sys/socket.h</text>
 </a>
 </g>

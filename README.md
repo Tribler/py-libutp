@@ -1,5 +1,5 @@
 
-# ptyhon wrapper for libutp
+# python wrapper for libutp
 
 
 The only existing one is terrible and has no documentation. 
@@ -14,3 +14,25 @@ Dependencies:
 * graphviz
 * valgrind
 * massif-visualizer
+* git
+
+
+# building:
+
+run 
+```bash
+make install
+```
+to install libutp on your system first (uses git)
+
+and then run 
+```bash
+make lib
+```
+To compile the c library. After this is done you can import the python library as normal. 
+
+
+# windows compatibility
+
+hoping to achive this through these:
+https://github.com/libressl-portable/portable/tree/master/include/compat

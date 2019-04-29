@@ -2,6 +2,8 @@ var searchData=
 [
   ['readme_2emd',['README.md',['../README_8md.html',1,'']]],
   ['recv_5fid',['recv_id',['../structUTPSocketKey.html#a47fd4568b703f7ff38376e370179b685',1,'UTPSocketKey']]],
+  ['remote_5faddr',['REMOTE_ADDR',['../main_8c.html#ac8c3fd957d6b3adb7bb7b573123bf093',1,'main.c']]],
+  ['remote_5fport',['REMOTE_PORT',['../main_8c.html#aa27dfcf9c5badbcdb4f87febf8ffed8d',1,'main.c']]],
   ['resize',['Resize',['../classArray.html#ad0a1ac75a7cff2b2d835b7b416d864fb',1,'Array']]],
   ['retransmit_5foverhead',['retransmit_overhead',['../utp__internal_8h.html#aaa467b5ccdade1a2c72759a841f82dd3af68618fb3134108cc240719a9bf219bd',1,'utp_internal.h']]],
   ['rexmit',['rexmit',['../structutp__socket__stats.html#a72fa7f8ff5716d1777fe799b0f14f18f',1,'utp_socket_stats']]],
