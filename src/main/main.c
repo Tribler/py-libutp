@@ -118,7 +118,11 @@ void serve(char *port) {
 
     init(config);
 
-    // setup complete
+
+    
+
+
+    // // setup complete
 
     unsigned char socket_data[4096];
     // receiving address
